@@ -8,13 +8,19 @@ services:
       - DATABASE_URL=postgresql://user:pass@db:5432/mydb
     depends_on:
       - db
+    networks:
+      - app-network
 
   frontend:
-    build: ./frontend
+    image: project_frontend:latest
     ports:
       - "3000:80"
     depends_on:
       - backend
+    networks:
+      - app-network
+    environment:
+      - BACKEND_URL=http://backend:8080
 
   db:
     image: postgres:14
@@ -24,3 +30,9 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

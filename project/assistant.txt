@@ -1,0 +1,54 @@
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Who is the owner of anthropic"}' \
+  http://localhost:8080/ask
+
+Based on our chats, here are all the places where the EC2 instance's public IP address was hardcoded. You will need to update these files if you restart your EC2 instance and its IP address changes.
+
+-----
+
+### 1\. `docker-compose.yml`
+
+The public IP was hardcoded as a build argument for the frontend service. This is used by the Docker build process to set the API URL in the frontend code.
+
+```yaml
+frontend:
+  # ...
+  build:
+    context: ./frontend
+    args:
+      - VITE_API_URL=http://<Your-EC2-Public-IP>:8080
+```
+
+-----
+
+### 2\. `frontend/src/components/ChatBox.jsx`
+
+To resolve the `ERR_NAME_NOT_RESOLVED` error, we hardcoded the public IP address directly into your `ChatBox` component's `fetch` call. This bypasses the environment variable and ensures the frontend makes the request to the correct public IP.
+
+```javascript
+// This is the hardcoded line
+const API_URL = "http://<Your-EC2-Public-IP>:8080";
+
+// ...
+const res = await fetch(`${API_URL}/ask`, {
+```
+
+-----
+
+### 3\. Backend `main.py` (CORS Configuration)
+
+The public IP was also added to the `origins` list in your FastAPI application's CORS middleware. This is necessary to allow your browser to make requests from the frontend to the backend without being blocked.
+
+```python
+# ...
+origins = [
+    "http://<Your-EC2-Public-IP>:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    # ...
+)
+```

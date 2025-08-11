@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   backend:
     build: ./backend
@@ -12,15 +11,17 @@ services:
       - app-network
 
   frontend:
-    image: project_frontend:latest
+    # Use the build context and pass the API URL as an argument
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://3.87.11.154:8080
     ports:
       - "3000:80"
     depends_on:
       - backend
     networks:
       - app-network
-    environment:
-      - BACKEND_URL=http://backend:8080
 
   db:
     image: postgres:14

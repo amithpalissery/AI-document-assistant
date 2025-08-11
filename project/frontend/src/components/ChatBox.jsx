@@ -6,7 +6,7 @@ export default function ChatBox() {
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = "http://3.87.11.154:8080";
 
   async function handleAsk() {
     if (!question.trim()) return;
@@ -19,7 +19,7 @@ export default function ChatBox() {
     setConversations(prev => [...prev, { type: 'user', content: currentQuestion }]);
     
     try {
-      const res = await fetch(`${API_URL}/api/ask`, {
+      const res = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: currentQuestion }),

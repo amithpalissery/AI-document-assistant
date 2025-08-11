@@ -1,5 +1,8 @@
 from fastapi import APIRouter, UploadFile
 from pydantic import BaseModel
+from fastapi import UploadFile, File
+import os
+import boto3
 from . import bedrock_client
 s3 = boto3.client('s3', region_name=os.getenv("AWS_REGION", "us-east-1"))
 
@@ -10,7 +13,7 @@ class QuestionRequest(BaseModel):
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    bucket = "your-s3-bucket-name"
+    bucket = "amith-project"
     s3.upload_fileobj(file.file, bucket, file.filename)
     return {"filename": file.filename, "status": "uploaded"}
 
